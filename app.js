@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 
 const authRoutes = require("./routes/auth_routes");
 const messageRoutes = require("./routes/message_routes");
@@ -36,24 +37,39 @@ mongoose
     console.log(`ERR: ${err}`);
   });
 
-// TODO: Socket protection
-// TODO: Socket Organisatiom
+// TODO: Socket Organisatiom and routing
 // TODO: Sorting
+
+io.use((socket, next) => {
+  if (socket.handshake.query && socket.handshake.query.token) {
+    jwt.verify(
+      socket.handshake.query.token,
+      process.env.SECRET,
+      function (err, decoded) {
+        if (err) return next(new Error("Authentication error"));
+        socket.auth = decoded;
+        next();
+      }
+    );
+  } else {
+    next(new Error("Authentication error"));
+  }
+});
 
 io.on("connection", (socket) => {
   console.log("User Connected");
 
-  socket.on("NEW_MESSAGE", (msg) => {
-    const message = JSON.parse(msg);
+  socket
+    .on("NEW_MESSAGE", (msg) => {
+      const message = JSON.parse(msg);
 
-    saveMessageToDB(message.from_id, message.from_username, message.text);
+      saveMessageToDB(socket.auth.id, message.from_username, message.text);
 
-    socket.emit("NEW_MESSAGE", msg);
-  });
-
-  socket.on("disconnect", () => {
-    console.log("User Disconnected");
-  });
+      socket.emit("NEW_MESSAGE", msg);
+    })
+    .on("disconnect", () => {
+      console.log("User Disconnected");
+    });
 });
 
 app.use("/api", authRoutes);

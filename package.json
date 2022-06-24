@@ -21,6 +21,7 @@
     "mongoose": "^6.4.0",
     "nodemon": "^2.0.16",
     "socket.io": "^4.5.1",
+    "socketio-jwt": "^4.6.2",
     "utf-8-validate": "^5.0.9",
     "uuid": "^8.3.2"
   }
