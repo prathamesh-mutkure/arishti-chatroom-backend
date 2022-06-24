@@ -14,13 +14,16 @@ exports.createMessage = (req, res) => {
 exports.saveMessageToDB = (from_id, from_username, text) => {
   const message = new Message({ from_id, from_username, text });
 
-  console.log(message);
-
-  message.save().then((newMessage) => {
-    if (!newMessage) {
-      console.log("Could not save message to DB");
-    }
-  });
+  message
+    .save()
+    .then((newMessage) => {
+      if (!newMessage) {
+        console.log("Could not save message to DB");
+      }
+    })
+    .catch((err) => {
+      console.log(`Error saving message: ${err}`);
+    });
 };
 
 exports.getAllMessages = (req, res) => {

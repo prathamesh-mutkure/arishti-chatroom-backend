@@ -36,22 +36,19 @@ mongoose
     console.log(`ERR: ${err}`);
   });
 
+// TODO: Socket protection
+// TODO: Socket Organisatiom
+// TODO: Sorting
+
 io.on("connection", (socket) => {
   console.log("User Connected");
 
   socket.on("NEW_MESSAGE", (msg) => {
     const message = JSON.parse(msg);
 
-    console.log(message);
-
     saveMessageToDB(message.from_id, message.from_username, message.text);
-  });
 
-  socket.emit("NEW_MESSAGE", {
-    id: "x",
-    text: "Hello from server",
-    from_id: "62b4b3d292d2e25c6085cca5",
-    from_username: "user1",
+    socket.emit("NEW_MESSAGE", msg);
   });
 
   socket.on("disconnect", () => {
