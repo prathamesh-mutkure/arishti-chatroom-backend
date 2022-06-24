@@ -11,12 +11,32 @@ exports.createMessage = (req, res) => {
   });
 };
 
+exports.saveMessageToDB = (from_id, from_username, text) => {
+  const message = new Message({ from_id, from_username, text });
+
+  console.log(message);
+
+  message.save().then((newMessage) => {
+    if (!newMessage) {
+      console.log("Could not save message to DB");
+    }
+  });
+};
+
 exports.getAllMessages = (req, res) => {
   Message.find({}, (err, messages) => {
     if (err) return handleError(res, "Error retriveing messages", 400);
 
     if (!messages) return handleError(res, "No messages!", 400);
 
-    return res.json({ messages });
+    const messagesFormatted = messages.map((message) => {
+      const { _id, text, from_id, from_username, createdAt } = message;
+
+      return { id: _id, text, from_id, from_username, createdAt };
+    });
+
+    return res.json({
+      messages: messagesFormatted,
+    });
   });
 };

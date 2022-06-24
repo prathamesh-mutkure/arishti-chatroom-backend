@@ -1,5 +1,7 @@
 const { handleError, handleSuccess } = require("../utils/handleResponse");
 const { check, validationResult } = require("express-validator");
+const jwt = require("jsonwebtoken");
+const { expressjwt: verifyJwt } = require("express-jwt");
 const User = require("../models/user_model");
 
 exports.login = (req, res) => {
@@ -10,10 +12,17 @@ exports.login = (req, res) => {
 
     if (!user) return handleError(res, "User doesn't exists", 400);
 
-    if (password !== user.password)
+    if (!user.authenticate(password))
       return handleError(res, "Incorrect username or password!", 401);
 
-    return res.json({ id: user._id, username: user.username });
+    const { _id: id, username } = user;
+
+    const token = jwt.sign({ id }, process.env.SECRET, {
+      algorithm: "HS256",
+      expiresIn: "1d",
+    });
+
+    return res.json({ id, username, token });
   });
 };
 
@@ -30,7 +39,20 @@ exports.register = (req, res) => {
     newUser.save().then((newUser) => {
       if (!newUser) return handleError(res, "Error registering user");
 
-      return res.json({ id: newUser.id, username: newUser.username });
+      const { _id: id, username } = newUser;
+
+      const token = jwt.sign({ id }, process.env.SECRET, {
+        algorithm: "HS256",
+        expiresIn: "1d",
+      });
+
+      return res.json({ id, username, token });
     });
   });
 };
+
+exports.isSignedIn = verifyJwt({
+  secret: process.env.SECRET,
+  algorithms: ["HS256"],
+  userProperty: "auth",
+});

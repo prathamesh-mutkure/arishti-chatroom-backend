@@ -1,5 +1,6 @@
 const express = require("express");
 const { check, validationResult } = require("express-validator");
+const { isSignedIn } = require("../controllers/auth_controller");
 const {
   createMessage,
   getAllMessages,
@@ -7,8 +8,8 @@ const {
 
 const router = express.Router();
 
-router.post("/message/send", createMessage);
+router.post("/message/send", isSignedIn, createMessage);
 
-router.get("/messages/all", getAllMessages);
+router.get("/messages/all", isSignedIn, getAllMessages);
 
 module.exports = router;

@@ -10,6 +10,7 @@ const cookieParser = require("cookie-parser");
 
 const authRoutes = require("./routes/auth_routes");
 const messageRoutes = require("./routes/message_routes");
+const { saveMessageToDB } = require("./controllers/message_controller");
 
 const PORT = process.env.PORT ?? 8000;
 const DB_URL = process.env.DB_URL;
@@ -39,11 +40,18 @@ io.on("connection", (socket) => {
   console.log("User Connected");
 
   socket.on("NEW_MESSAGE", (msg) => {
-    console.log("message: " + msg);
+    const message = JSON.parse(msg);
 
-    // Save this message on DB
-    // Emit new event from sever
-    // Reload message on client side
+    console.log(message);
+
+    saveMessageToDB(message.from_id, message.from_username, message.text);
+  });
+
+  socket.emit("NEW_MESSAGE", {
+    id: "x",
+    text: "Hello from server",
+    from_id: "62b4b3d292d2e25c6085cca5",
+    from_username: "user1",
   });
 
   socket.on("disconnect", () => {
