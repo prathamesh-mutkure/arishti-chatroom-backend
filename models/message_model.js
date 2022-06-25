@@ -4,11 +4,6 @@ const { ObjectId } = mongoose;
 
 const messageSchema = new mongoose.Schema(
   {
-    // _id: {
-    //   type: String,
-    //   required: true,
-    //   trim: true,
-    // },
     text: {
       type: String,
       required: true,

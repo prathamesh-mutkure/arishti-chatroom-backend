@@ -38,7 +38,7 @@ mongoose
   });
 
 // TODO: Socket Organisatiom and routing
-// TODO: Sorting
+// TODO: Return sorted messages
 
 io.use((socket, next) => {
   if (socket.handshake.query && socket.handshake.query.token) {
