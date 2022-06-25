@@ -3,8 +3,12 @@
   "version": "1.0.0",
   "description": "NodeJS backend created to host backend for a chatroom app, created as part of internship technical round",
   "main": "app.js",
+  "engines": {
+    "node": "16.x"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
   },
   "author": "Prathamesh Mutkure",
   "license": "ISC",
